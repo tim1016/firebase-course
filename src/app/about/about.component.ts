@@ -29,7 +29,15 @@ import { Course } from "../model/course";
 export class AboutComponent implements OnInit {
   constructor(private db: AngularFirestore) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    const ref = this.db
+      .doc("/courses/3UOswziG8R3T9gmc7X9B")
+      .snapshotChanges()
+      .subscribe((snap) => {
+        const course: any = snap.payload.data();
+        console.log("related courseRef = ", course.relatedCourse);
+      });
+  }
 
   batchWrite() {
     const courseRef1 = this.db.doc("courses/fHFZykLZHJZsRCyGUOOW").ref;
