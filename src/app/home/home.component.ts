@@ -3,6 +3,7 @@ import { Course } from "../model/course";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { AngularFirestore } from "@angular/fire/firestore";
+import { CoursesService } from "../services/courses.service";
 
 @Component({
   selector: "home",
@@ -10,16 +11,13 @@ import { AngularFirestore } from "@angular/fire/firestore";
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit {
-  constructor(private db: AngularFirestore) {}
+  constructor(private coursesService: CoursesService) {}
   courses$: Observable<Course[]>;
 
   beginnerCourses$: Observable<Course[]>;
   advancedCourses$: Observable<Course[]>;
   ngOnInit() {
-    this.courses$ = this.db
-      .collection("courses")
-      .snapshotChanges()
-      .pipe(map((snaps) => this.convertSnaps<Course>(snaps)));
+    this.courses$ = this.coursesService.loadAllCourses();
 
     this.beginnerCourses$ = this.courses$.pipe(
       map((courses) => {
@@ -38,12 +36,12 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  convertSnaps<T>(snaps): T[] {
-    return <T[]>snaps.map((snap) => {
-      return {
-        id: snap.payload.doc.id,
-        ...(snap.payload.doc.data() as object),
-      };
-    });
-  }
+  // convertSnaps<T>(snaps): T[] {
+  //   return <T[]>snaps.map((snap) => {
+  //     return {
+  //       id: snap.payload.doc.id,
+  //       ...(snap.payload.doc.data() as object),
+  //     };
+  //   });
+  // }
 }
