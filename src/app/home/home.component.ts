@@ -17,6 +17,10 @@ export class HomeComponent implements OnInit {
   beginnerCourses$: Observable<Course[]>;
   advancedCourses$: Observable<Course[]>;
   ngOnInit() {
+    this.reloadCourses();
+  }
+
+  reloadCourses() {
     this.courses$ = this.coursesService.loadAllCourses();
 
     this.beginnerCourses$ = this.courses$.pipe(
@@ -35,7 +39,6 @@ export class HomeComponent implements OnInit {
       })
     );
   }
-
   // convertSnaps<T>(snaps): T[] {
   //   return <T[]>snaps.map((snap) => {
   //     return {

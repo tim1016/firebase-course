@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { Course } from "../model/course";
 import { map, first } from "rxjs/operators";
-import { Observable } from "rxjs";
+import { Observable, from } from "rxjs";
 import { Lesson } from "../model/lesson";
 // import {OrderByDirection} from "@angular/fire/firestore"
 
@@ -69,5 +69,9 @@ export class CoursesService {
         map((snaps) => this.convertSnaps<Lesson>(snaps)),
         first()
       );
+  }
+
+  saveCourse(courseId: string, changes: Partial<Course>): Observable<any> {
+    return from(this.db.doc(`courses/${courseId}`).update(changes));
   }
 }
