@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
+import { of } from "rxjs";
 
 // import * as firebase from "firebase/app";
 // import "firebase/firestore";
@@ -27,12 +28,17 @@ import { AngularFirestore } from "@angular/fire/firestore";
 export class AboutComponent implements OnInit {
   constructor(private db: AngularFirestore) {}
 
-  ngOnInit() {
-    this.db
-      .collection("courses")
-      .stateChanges()
-      .subscribe((snaps) => {
-        console.log(snaps);
-      });
+  ngOnInit() {}
+
+  batchWrite() {
+    const courseRef1 = this.db.doc("courses/fHFZykLZHJZsRCyGUOOW").ref;
+    const courseRef2 = this.db.doc("courses/rp4JBEV8F4yVBWfJAJmi").ref;
+    const batch = this.db.firestore.batch();
+
+    batch.update(courseRef1, { titles: { description: "New Course Ref1" } });
+
+    batch.update(courseRef2, { titles: { description: "New Course Ref2" } });
+
+    const batchObs = of(batch.commit());
   }
 }
