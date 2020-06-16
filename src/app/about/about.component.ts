@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { of } from "rxjs";
+import { Course } from "../model/course";
 
 // import * as firebase from "firebase/app";
 // import "firebase/firestore";
@@ -40,5 +41,24 @@ export class AboutComponent implements OnInit {
     batch.update(courseRef2, { titles: { description: "New Course Ref2" } });
 
     const batchObs = of(batch.commit());
+  }
+
+  async runTransaction() {
+    const newCount = await this.db.firestore.runTransaction(
+      async (transaction) => {
+        const courseRef = this.db.doc("courses/a1iiOMLcMT81qJ8oDqLV").ref;
+
+        const snap = await transaction.get(courseRef);
+
+        const course = <Course>snap.data();
+
+        const lessonsCount = course.lessonsCount + 100;
+        transaction.update(courseRef, { lessonsCount });
+
+        return lessonsCount;
+      }
+    );
+
+    console.log("new Count is : ", newCount);
   }
 }
