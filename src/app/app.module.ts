@@ -37,6 +37,10 @@ import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { AngularFireStorageModule } from "@angular/fire/storage";
 import { LoginComponent } from "./login/login.component";
 
+import * as firebase from "firebase/app";
+
+firebase.initializeApp(environment.firebase);
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -70,6 +74,7 @@ import { LoginComponent } from "./login/login.component";
     MatDatepickerModule,
     MatMomentDateModule,
     ReactiveFormsModule,
+    AngularFireModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule.enablePersistence(),
