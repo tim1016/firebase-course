@@ -1,17 +1,73 @@
 rules_version = '2';
+
+
 service cloud.firestore {
   match /databases/{database}/documents {
+  
+  function isAuthenticated(){
+  return request.auth.uid != null;
+  }
+  
+  
+       function isNonEmptyString(fieldName) {
+     return request.resource.data[fieldName] is string &&
+     				request.resource.data[fieldName].size()> 0;
+     }
+     
+     function isValidCourse() {
+     	return request.resource.data.seqNo is number
+      			&& request.resource.data.lessonsCount is number
+            && request.resource.data.lessonsCount > 0
+            && isNonEmptyString("url"); 
+     
+     }
+  
 
-    // This rule allows anyone on the internet to view, edit, and delete
-    // all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // your app will lose access to your Firestore database
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2020, 7, 14);
-    }
+  function isAdmin(){
+  return isKnownUser() &&
+  get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+  }   
+
+  
+  function isKnownUser(){
+  return isAuthenticated() && 
+  exists(/databases/$(database)/documents/users/$(request.auth.uid))
+  }
+  
+  match /users/{userId}{
+  allow read, write: if false;
+  }
+  
+  	match /courses/{courseId}{
+    	
+    	 allow read : if isKnownUser();
+       allow write: if isAdmin() && isValidCourse();
+       
+       match /lessons/{lessonId}{
+       allow read: if isKnownUser();
+       allow write: if isAdmin();
+       }
+    }    
   }
 }
+
+
+
+
+// service cloud.firestore {
+//   match /databases/{database}/documents/courses/{courseId} {
+//     allow read: if true;
+//     allow write: if false;
+//   }
+// }
+
+
+
+// rules_version = '2';
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+//     match /{document=**} {
+//       allow read, write: if request.time < timestamp.date(2020, 7, 14);
+//     }
+//   }
+// }
