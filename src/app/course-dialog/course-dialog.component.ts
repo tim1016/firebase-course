@@ -17,7 +17,7 @@ export class CourseDialogComponent implements OnInit {
   description: string;
   course: Course;
   uploadPercent$: Observable<number>;
-  downloadUrl$: Observable<string>;
+  // downloadUrl$: Observable<string>;
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CourseDialogComponent>,
@@ -57,17 +57,17 @@ export class CourseDialogComponent implements OnInit {
 
     this.storage.ref(filePath).getDownloadURL();
     this.uploadPercent$ = task.percentageChanges();
-    this.downloadUrl$ = task.snapshotChanges().pipe(
-      last(),
-      concatMap(() => this.storage.ref(filePath).getDownloadURL())
-    );
-    const saveUrl$ = this.downloadUrl$.pipe(
-      concatMap((url) =>
-        this.coursesService.saveCourse(this.course.id, {
-          uploadedImageUrl: url,
-        })
-      )
-    );
-    saveUrl$.subscribe(console.log);
+    // this.downloadUrl$ = task.snapshotChanges().pipe(
+    //   last(),
+    //   concatMap(() => this.storage.ref(filePath).getDownloadURL())
+    // );
+    // const saveUrl$ = this.downloadUrl$.pipe(
+    //   concatMap((url) =>
+    //     this.coursesService.saveCourse(this.course.id, {
+    //       uploadedImageUrl: url,
+    //     })
+    //   )
+    // );
+    // saveUrl$.subscribe(console.log);
   }
 }
